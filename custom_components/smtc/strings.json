@@ -1,0 +1,37 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Add a card",
+        "description": "Choose the card's stack address (0-7).",
+        "data": {
+          "stack": "Stack address"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "This stack address is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Select entities",
+        "description": "Choose which card entities to create.",
+        "data": {
+          "entities": "Entities"
+        }
+      },
+      "intervals": {
+        "title": "Update intervals",
+        "description": "Set the update interval in seconds for each selected sensor."
+      }
+    }
+  },
+  "issues": {
+    "remove_yaml": {
+      "title": "Remove the legacy YAML configuration",
+      "description": "Check that all cards and entities were imported successfully. Then remove the YAML configuration from configuration.yaml and restart Home Assistant. Later YAML changes are not imported."
+    }
+  }
+}

@@ -7,6 +7,10 @@ seamlessly with Home Assistant, bringing all your custom functionality into the 
 
 ## Installation
 
+> This development version requires `sequent-ha-common==0.0.2`, which must be
+> published before deployment. All installed Sequent integration pins should be
+> updated and tested together.
+
 > If you already have HACS, I2C and File editor configured, you can skip to [The actual installation](#the-actual-installation)
 
 
@@ -42,23 +46,28 @@ seamlessly with Home Assistant, bringing all your custom functionality into the 
     - Repository is `SequentMicrosystems/SMtc-ha` and type is `Integration`
     - Once added, you can now search it in HACS menu and download it
 
-5. Add SMtc config in configuration.yaml
-    - In the sidebar, select `File editor` and start the add-on
-    - Click the folder icon from the top left corner and edit `configuration.yaml`
-    - At the end of the file append the SMtc config:
-        ```yaml
-        SMtc:
-        ```
-        > for more information, see [configuration.yaml](#configuration.yaml)
-    - Save the file
+5. Restart Home Assistant, then open **Settings > Devices & services**.
+6. Select **Add integration**, choose **Sequent Microsystems Eight Thermocouples DAQ Integration**, and enter the
+   card's stack address. Repeat for each card.
+7. Use **Configure** to choose entities and their update intervals.
 
-6. Reboot system
+### Upgrading from `SMtc`
 
-7. Reboot system (yes, it must be done twice)
+Back up Home Assistant first. Uninstall the old integration and install the
+updated one; Marketplace may require re-adding the repository. Ensure
+`custom_components/SMtc` is removed and only `custom_components/smtc`
+remains. Change the top-level `SMtc:` YAML key to `smtc:` and restart.
+Existing entity registry entries are migrated to the new domain; conflicting
+entries must be resolved before setup can continue.
 
+## Migrating from YAML
 
+Existing `smtc:` YAML is imported once. Check the entries under **Settings >
+Devices & services**, remove the YAML section and restart Home Assistant. Later
+YAML edits are not imported, and existing entries are not overwritten. Use the
+integration UI for further changes.
 
-## configuration.yaml
+The legacy examples below are retained for reference:
 
 `configuration.yaml` example:
 ```yaml
@@ -73,27 +82,27 @@ automation: !include automations.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
 
-SMtc:
+smtc:
     # + optional configs
 ```
 
 - Simple stack 0 config:
 
 ```yaml
-SMtc:
+smtc:
 ```
 
 - Specific stack config:
 
 ```yaml
-SMtc:
+smtc:
     - stack: 2
 ```
 
 - Multiple cards on different stack levels:
 
 ```yaml
-SMtc:
+smtc:
     - stack: 0
     - stack: 2
     - stack: 3
@@ -104,7 +113,7 @@ SMtc:
 > !The following example is provided for illustrative purposes only and does NOT necessarily represent real entities!
 
 ```yaml
-SMtc:
+smtc:
     - stack: 0
       relay_1:
       relay_3:
@@ -130,11 +139,9 @@ temp_1: -> temp_8:  (type: sensor)
 ```
 
 Entity options:
-- `channels: "l,i,s,t"` (comma separated channel numbers)
+- `channels: "1,3,5"` (comma-separated unique channels; takes precedence over `chan_range`)
 - `chan_range: "start..end"` (specify inclusive channel range)
 - `update_interval: seconds` (specify the update interval for `sensor` and `binary_sensor`, default **30s**)
-- `update_interval: seconds` (specify the update interval for `datetime`(RTC), default **1s**)
-- `internet_sync_interval: seconds` (specify the internet sync interval for `datetime`(RTC), default **60s**)
 
 
 
@@ -142,3 +149,17 @@ Entity options:
 
 1. Enities show up in the overview but do not function correctly
     - Make sure the I2C was enabled correctly. You can check if I2C was initialized properly by running the HassOS I2C Configurator again and checking the logs.
+
+## Testing
+
+With Python 3.14, install `homeassistant==2026.11.1`,
+`pytest-homeassistant==2026.11.1`, and the integration requirements from the
+manifest, then run:
+
+```shell
+python -m pytest -p no:respx --asyncio-mode=auto -o asyncio_default_fixture_loop_scope=function tests
+```
+
+Tests simulate hardware and check the installed driver API. CI installs the
+manifest requirements from PyPI. The shared-library release must be published
+before that installation can succeed.

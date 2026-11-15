@@ -3,7 +3,7 @@ LINK="https://sequentmicrosystems.com/products/eight-thermocouples-daq-8-layer-s
 
 import sm_tc
 API = sm_tc.SMtc
-DOMAIN = "SMtc"
+DOMAIN = "smtc"
 NAME_PREFIX = "smtc"
 SM_MAP = {
     #"button": {
