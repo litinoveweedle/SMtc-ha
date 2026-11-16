@@ -1,0 +1,71 @@
+name: Prepare draft release
+
+on:
+  workflow_dispatch:
+    inputs:
+      prerelease:
+        description: Mark the draft as a prerelease
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    permissions:
+      contents: read
+    uses: ./.github/workflows/tests.yml
+
+  validate:
+    permissions:
+      contents: read
+    uses: ./.github/workflows/validate.yml
+
+  draft:
+    needs: [test, validate]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Check manifest version and existing tags
+        id: version
+        env:
+          PRERELEASE: ${{ inputs.prerelease }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import subprocess
+
+          manifests = list(Path("custom_components").glob("*/manifest.json"))
+          if len(manifests) != 1:
+              raise SystemExit(f"Expected one integration manifest, found {len(manifests)}")
+          version = json.loads(manifests[0].read_text(encoding="utf-8"))["version"]
+          match = re.fullmatch(r"(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)((?:a|b|rc)\d+)?", version)
+          if not match:
+              raise SystemExit(f"Unsupported version: {version!r}; use X.Y.Z or X.Y.ZrcN")
+          if match.group(4) and os.environ["PRERELEASE"] != "true":
+              raise SystemExit("A prerelease version must be marked as a prerelease")
+          tag = f"v{version}"
+          result = subprocess.run(["git", "tag", "--list", tag], check=True, capture_output=True, text=True)
+          if result.stdout.strip():
+              raise SystemExit(f"Tag {tag} already exists; choose a new version")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write(f"tag={tag}\n")
+          PY
+      - name: Create draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+          PRERELEASE: ${{ inputs.prerelease }}
+        run: |
+          args=(--draft --target "$GITHUB_SHA" --generate-notes)
+          if [ "$PRERELEASE" = "true" ]; then
+            args+=(--prerelease)
+          fi
+          gh release create "$TAG" "${args[@]}"

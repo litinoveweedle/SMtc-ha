@@ -7,9 +7,8 @@ seamlessly with Home Assistant, bringing all your custom functionality into the 
 
 ## Installation
 
-> This development version requires `SMcommonHA>=0.0.2`, which must be
-> published before deployment. All installed Sequent integration pins should be
-> updated and tested together.
+> This integration requires `SMcommonHA>=0.0.3` from PyPI. Test installed
+> Sequent integrations together when changing their shared-library requirements.
 
 > If you already have HACS, I2C and File editor configured, you can skip to [The actual installation](#the-actual-installation)
 
@@ -149,6 +148,27 @@ Entity options:
 
 1. Enities show up in the overview but do not function correctly
     - Make sure the I2C was enabled correctly. You can check if I2C was initialized properly by running the HassOS I2C Configurator again and checking the logs.
+
+## Preparing a release
+
+1. Publish and verify any required `SMcommonHA` release on PyPI first; update
+   and test card requirements together. Check the existing repository releases
+   and tags, then set the manifest version to a newer version. Use `X.Y.Z` or a
+   prerelease such as `X.Y.Zrc1`.
+2. Push the release commit and run **Prepare draft release** from the Actions
+   tab on that branch. It runs the card tests, HACS validation and hassfest;
+   if they pass, it creates a draft for that commit with tag `v<version>`.
+   Prerelease is selected by default. Existing tags are rejected.
+3. Review the generated notes and add migration steps, breaking changes,
+   supported Home Assistant versions, and any hardware or watchdog limitations.
+   Test installation, upgrade and card behavior, then publish the draft manually.
+
+HACS and Marketplace use published GitHub releases for updates. The
+`homeassistant` minimum is currently 2026.11.1, the version tested in CI;
+older versions have not been verified. HACS validation also requires a
+repository description, topics, enabled GitHub issues, and a GitHub-
+recognized OSI-approved license. The repository owner must configure these
+before the draft-release workflow can pass its validation gate.
 
 ## Testing
 
