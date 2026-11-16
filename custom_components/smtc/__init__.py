@@ -1,7 +1,7 @@
 """Sequent Microsystems integration."""
 
-from sequent_ha_common import Card
-from sequent_ha_common import setup as shared_setup
+from SMcommonHA import Card
+from SMcommonHA import setup as shared_setup
 
 from . import data
 

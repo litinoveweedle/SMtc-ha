@@ -1,8 +1,8 @@
 """Configuration flow for the card."""
 
 from homeassistant.core import callback
-from sequent_ha_common.config_flow import SequentConfigFlow as SharedConfigFlow
-from sequent_ha_common.config_flow import SequentOptionsFlow
+from SMcommonHA.config_flow import SequentConfigFlow as SharedConfigFlow
+from SMcommonHA.config_flow import SequentOptionsFlow
 
 from . import CARD, DOMAIN
 

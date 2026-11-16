@@ -1,6 +1,6 @@
 """Shared sensor platform for the card."""
 
-from sequent_ha_common.sensor import async_setup_entry as shared_setup
+from SMcommonHA.sensor import async_setup_entry as shared_setup
 
 from . import CARD
 

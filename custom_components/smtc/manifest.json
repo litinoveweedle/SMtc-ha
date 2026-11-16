@@ -13,6 +13,6 @@
 	"config_flow": true,
 	"requirements": [
 		"SMtc>=1.0.0",
-		"sequent-ha-common==0.0.2"
+		"SMcommonHA>=0.0.2"
 	]
 }

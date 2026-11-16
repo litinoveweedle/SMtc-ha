@@ -1,6 +1,6 @@
 """Shared select platform for the card."""
 
-from sequent_ha_common.select import async_setup_entry as shared_setup
+from SMcommonHA.select import async_setup_entry as shared_setup
 
 from . import CARD
 

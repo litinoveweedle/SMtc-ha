@@ -7,7 +7,7 @@ seamlessly with Home Assistant, bringing all your custom functionality into the 
 
 ## Installation
 
-> This development version requires `sequent-ha-common==0.0.2`, which must be
+> This development version requires `SMcommonHA>=0.0.2`, which must be
 > published before deployment. All installed Sequent integration pins should be
 > updated and tested together.
 
