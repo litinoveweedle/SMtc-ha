@@ -172,6 +172,8 @@ before the draft-release workflow can pass its validation gate.
 
 ## Testing
 
+CI uses Super-Linter to check changed Python and JSON files.
+
 With Python 3.14, install `homeassistant==2026.11.1`,
 `pytest-homeassistant==2026.11.1`, and the integration requirements from the
 manifest, then run:

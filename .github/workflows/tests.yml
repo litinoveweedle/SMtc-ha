@@ -9,6 +9,28 @@ permissions:
   contents: read
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      statuses: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Super-Linter
+        uses: super-linter/super-linter@v7
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_ALL_CODEBASE: false
+          VALIDATE_PYTHON_RUFF: true
+          VALIDATE_JSON: true
+          LINTER_RULES_PATH: .
+          PYTHON_RUFF_CONFIG_FILE: ruff.toml
+          DEFAULT_BRANCH: origin/${{ github.event.repository.default_branch }}
+
   test:
     runs-on: ubuntu-latest
     steps:

@@ -1,19 +1,19 @@
-FULL_NAME="Eight Thermocouples DAQ"
-LINK="https://sequentmicrosystems.com/products/eight-thermocouples-daq-8-layer-stackable-hat-for-raspberry-pi"
-
 import sm_tc
+
+FULL_NAME = "Eight Thermocouples DAQ"
+LINK = "https://sequentmicrosystems.com/products/eight-thermocouples-daq-8-layer-stackable-hat-for-raspberry-pi"
 API = sm_tc.SMtc
 DOMAIN = "smtc"
 NAME_PREFIX = "smtc"
 SM_MAP = {
-    #"button": {
+    # "button": {
     #    "contact_cnt_rst": {
     #        "chan_no": 4,
     #        "com": {
     #            "set": "rstContactCounter",
     #        },
     #    }
-    #},
+    # },
     "select": {
         "type": {
             "chan_no": 8,
@@ -30,16 +30,16 @@ SM_MAP = {
                 "R": 5,
                 "S": 6,
                 "T": 7,
-            }
+            },
         },
     },
-    "sensor":  {
+    "sensor": {
         "temp": {
-                "chan_no": 8,
-                "uom": "°C",
-                "com": {
-                    "get": "get_temp",
-                },
+            "chan_no": 8,
+            "uom": "°C",
+            "com": {
+                "get": "get_temp",
+            },
         },
     },
 }

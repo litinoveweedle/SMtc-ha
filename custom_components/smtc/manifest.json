@@ -2,19 +2,13 @@
   "domain": "smtc",
   "name": "Sequent Microsystems Eight Thermocouples DAQ Integration",
   "after_dependencies": [],
-  "codeowners": [
-    "@3lv",
-    "litinoveweedle"
-  ],
+  "codeowners": ["@3lv", "@litinoveweedle"],
   "config_flow": true,
   "dependencies": [],
   "documentation": "https://github.com/SequentMicrosystems/SMtc-ha",
   "integration_type": "device",
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/SequentMicrosystems/SMtc-ha",
-  "requirements": [
-    "SMtc>=1.0.1",
-    "SMcommonHA>=0.0.3"
-  ],
+  "requirements": ["SMtc>=1.0.1", "SMcommonHA>=0.0.3"],
   "version": "1.0.0"
 }

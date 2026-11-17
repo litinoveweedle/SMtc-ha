@@ -15,6 +15,7 @@ jobs:
   test:
     permissions:
       contents: read
+      statuses: write
     uses: ./.github/workflows/tests.yml
 
   validate:

@@ -74,6 +74,7 @@ def hardware(hass, monkeypatch):
                 methods[name] = method
 
     if inspect.isclass(API):
+
         class FakeCard:
             def __init__(self, stack):
                 self.stack = stack
@@ -101,7 +102,9 @@ async def test_yaml_migration_and_configuration(hass, hardware):
         platform, LEGACY_DOMAIN, unique_id, suggested_object_id="existing_card_entity"
     )
     registry.async_update_entity(old.entity_id, name="Custom name")
-    assert await async_setup_component(hass, DOMAIN, {DOMAIN: [{"stack": "0", key: None}]})
+    assert await async_setup_component(
+        hass, DOMAIN, {DOMAIN: [{"stack": "0", key: None}]}
+    )
     await hass.async_block_till_done()
     entry = hass.config_entries.async_entries(DOMAIN)[0]
     assert entry.state is config_entries.ConfigEntryState.LOADED
@@ -134,13 +137,17 @@ async def test_import_preserves_suffixed_legacy_unique_id(hass, hardware):
     registry = entity_registry.async_get(hass)
     base = f"{platform}.{DOMAIN}0_{kind}_1"
     old = registry.async_get_or_create(
-        platform, LEGACY_DOMAIN, base + "_2",
+        platform,
+        LEGACY_DOMAIN,
+        base + "_2",
         original_name=f"{hardware.CARD.name_prefix}0_{key}",
     )
     registry.async_update_entity(
         old.entity_id, disabled_by=entity_registry.RegistryEntryDisabler.USER
     )
-    assert await async_setup_component(hass, DOMAIN, {DOMAIN: [{"stack": "0", key: None}]})
+    assert await async_setup_component(
+        hass, DOMAIN, {DOMAIN: [{"stack": "0", key: None}]}
+    )
     await hass.async_block_till_done()
     entry = hass.config_entries.async_entries(DOMAIN)[0]
     restored = registry.async_get(old.entity_id)
@@ -156,7 +163,9 @@ async def test_ui_setup_duplicate_and_unload(hass, hardware):
         DOMAIN, context={"source": config_entries.SOURCE_USER}
     )
     assert result["type"] is FlowResultType.FORM
-    result = await hass.config_entries.flow.async_configure(result["flow_id"], {"stack": 1})
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"], {"stack": 1}
+    )
     assert result["type"] is FlowResultType.CREATE_ENTRY
     await hass.async_block_till_done()
     entry = hass.config_entries.async_entries(DOMAIN)[0]
@@ -167,15 +176,21 @@ async def test_ui_setup_duplicate_and_unload(hass, hardware):
     assert len(devices) == 1
     platform, kind, _ = first_entity()
     registry = entity_registry.async_get(hass)
-    entity_id = registry.async_get_entity_id(platform, DOMAIN, f"{platform}.{DOMAIN}1_{kind}_1")
+    entity_id = registry.async_get_entity_id(
+        platform, DOMAIN, f"{platform}.{DOMAIN}1_{kind}_1"
+    )
     assert entity_id is not None
     for entity_platform, types in SM_MAP.items():
         for entity_type, metadata in types.items():
             for channel in range(1, metadata["chan_no"] + 1):
                 unique_id = f"{entity_platform}.{DOMAIN}1_{entity_type}_{channel}"
-                registered_id = registry.async_get_entity_id(entity_platform, DOMAIN, unique_id)
+                registered_id = registry.async_get_entity_id(
+                    entity_platform, DOMAIN, unique_id
+                )
                 assert registered_id is not None, unique_id
-                assert registry.async_get(registered_id).config_entry_id == entry.entry_id
+                assert (
+                    registry.async_get(registered_id).config_entry_id == entry.entry_id
+                )
     duplicate = await hass.config_entries.flow.async_init(
         DOMAIN, context={"source": config_entries.SOURCE_USER}
     )
@@ -185,7 +200,10 @@ async def test_ui_setup_duplicate_and_unload(hass, hardware):
     assert duplicate["reason"] == "already_configured"
     assert await hass.config_entries.async_unload(entry.entry_id)
     assert await hass.config_entries.async_setup(entry.entry_id)
-    assert registry.async_get_entity_id(platform, DOMAIN, f"{platform}.{DOMAIN}1_{kind}_1") == entity_id
+    assert (
+        registry.async_get_entity_id(platform, DOMAIN, f"{platform}.{DOMAIN}1_{kind}_1")
+        == entity_id
+    )
 
 
 async def test_select_writes_the_selected_channel(hass, hardware):
@@ -202,13 +220,18 @@ async def test_select_writes_the_selected_channel(hass, hardware):
             calls.append((self.stack, channel, value))
 
     hardware.CARD.api = FakeCard
-    assert await async_setup_component(hass, DOMAIN, {DOMAIN: [{"stack": "2", "type_3": None}]})
+    assert await async_setup_component(
+        hass, DOMAIN, {DOMAIN: [{"stack": "2", "type_3": None}]}
+    )
     await hass.async_block_till_done()
     registry = entity_registry.async_get(hass)
     entity_id = registry.async_get_entity_id("select", DOMAIN, "select.smtc2_type_3")
     assert entity_id is not None
     await hass.services.async_call(
-        "select", "select_option", {"entity_id": entity_id, "option": "K"}, blocking=True
+        "select",
+        "select_option",
+        {"entity_id": entity_id, "option": "K"},
+        blocking=True,
     )
     assert calls == [(2, 3, 3)]
 
